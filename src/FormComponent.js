@@ -1,46 +1,46 @@
-import { useState } from "react";
+import { Formik, Form } from "formik";
+
+import CustomInput from "./CustomInput";
 
 const FormComponent = ({ addRecord }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const validation = (values) => {
+    let errors = {};
+
+    if (!values.username) {
+      errors.username = "Required";
+    }
+
+    if (!values.password) {
+      errors.password = "Required";
+    }
+
+    return errors;
+  };
 
   return (
-    <form>
-      <label>Username</label>
-      <input
-        value={username}
-        onChange={(e) => {
-          setUsername(e.target.value);
-        }}
-      />
+    <Formik
+      initialValues={{ username: "", password: "" }}
+      onSubmit={(values, action) => {
+        addRecord(values);
 
-      <label>Password</label>
-      <input
-        value={password}
-        onChange={(e) => {
-          setPassword(e.target.value);
-        }}
-      />
+        setTimeout(() => {
+          action.resetForm();
+        }, 100);
+      }}
+      validate={validation}
+    >
+      {() => (
+        <Form>
+          <label>Username</label>
+          <CustomInput name="username" />
 
-      <button
-        type="button"
-        onClick={() => {
-          const state = {
-            username: username,
-            password: password,
-          };
+          <label>Password</label>
+          <CustomInput name="password" />
 
-          addRecord(state);
-
-          setTimeout(() => {
-            setUsername("");
-            setPassword("");
-          }, 100);
-        }}
-      >
-        Add to List
-      </button>
-    </form>
+          <button type="submit">Add to List</button>
+        </Form>
+      )}
+    </Formik>
   );
 };
 
